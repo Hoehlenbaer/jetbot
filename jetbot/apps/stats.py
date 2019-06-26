@@ -1,89 +1,127 @@
-# Copyright (c) 2017 Adafruit Industries
-# Author: Tony DiCola & James DeVito
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
+# Written by SparkFun Electronics June 2019
+# Author: Wes Furuya
+# 
+# *Shell scripts were taken from original jetbot stats.py code.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY without even the implied warrranty of
+# MERCHANABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+# GNU General Public License for more details.
+
+# You should have reciede a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/license>
+
 import time
-
-import Adafruit_SSD1306
-
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
+import qwiic_micro_oled
 from jetbot.utils.utils import get_ip_address
-
 import subprocess
 
-# 128x32 display with hardware I2C:
-disp = Adafruit_SSD1306.SSD1306_128_32(rst=None, i2c_bus=1, gpio=1) # setting gpio to 1 is hack to avoid platform detection
+# Default Address for Micro OLED
+micro_oled_address=0x3D
 
-# Initialize library.
+# Initialization
+disp = qwiic_micro_oled.QwiicMicroOled(micro_oled_address)
 disp.begin()
-
-# Clear display.
-disp.clear()
-disp.display()
-
-# Create blank image for drawing.
-# Make sure to create image with mode '1' for 1-bit color.
-width = disp.width
-height = disp.height
-image = Image.new('1', (width, height))
-
-# Get drawing object to draw on image.
-draw = ImageDraw.Draw(image)
-
-# Draw a black filled box to clear the image.
-draw.rectangle((0,0,width,height), outline=0, fill=0)
-
-# Draw some shapes.
-# First define some constants to allow easy resizing of shapes.
-padding = -2
-top = padding
-bottom = height-padding
-# Move left to right keeping track of the current x position for drawing shapes.
-x = 0
-
-# Load default font.
-font = ImageFont.load_default()
-
+disp.scrollStop()
 
 while True:
+	# Clear Display
+	disp.clear(disp.PAGE)
+	disp.clear(disp.ALL)
+	
+	# Displays IP Address (if available)--------------------------------
+	a = 0
+	
+	# Set Font
+	disp.setFontType(0)
+	
+	#Set Cursor at Origin
+	disp.setCursor(0,0)
+	
+	# Checks eth0 and wlan0 Connections
+	try:
+		eth = get_ip_address('eth0')
+		a = a + 1
+	except Exception as e:
+		print(e)
 
-    # Draw a black filled box to clear the image.
-    draw.rectangle((0,0,width,height), outline=0, fill=0)
+	try:
+		wlan = get_ip_address('wlan0')
+		a = a + 2
+	except Exception as e:
+		print(e)
+	
+	# Prints IP Address on OLED Display
+	if a == 1:		
+		disp.print("eth0:")
+		disp.setCursor(0,10)
+		disp.print(str(eth))
+	elif a == 2:
+		disp.print("wlan0: ")
+		disp.setCursor(0,10)
+		disp.print(str(wlan))
+	elif a == 3:
+		disp.setCursor(0,24)
+		disp.print("wlan0: ")
+		disp.setCursor(0,34)
+		disp.print(str(wlan))
+	else:
+		disp.print("No Connection")
+	
+	disp.display()
+	time.sleep(10) #Pause 10 sec
+	
+	# Displays Resource Usage-------------------------------------------
+	# Shell scripts for system monitoring from here : https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-$
+		
+	# CPU Load--------------------------------------------------
+	cmd = "top -bn1 | grep load | awk '{printf \"%.1f%%\", $(NF-2)}'"
+	CPU = subprocess.check_output(cmd, shell = True )
+	
+	# Memory Use------------------------------------------------
+	cmd = "free -m | awk 'NR==2{printf \"%.1f%%\", $3*100/$2}'"
+	Mem_percent = subprocess.check_output(cmd, shell = True )
+	cmd = "free -m | awk 'NR==2{printf \"%.2f/%.1f\", $3/1024,$2/1024}'"
+	MemUsage = subprocess.check_output(cmd, shell = True )
+	
+	# Disk Storage----------------------------------------------
+	cmd = "df -h | awk '$NF==\"/\"{printf \"%s\", $5}'"
+	Disk_percent = subprocess.check_output(cmd, shell = True )
+	cmd = "df -h | awk '$NF==\"/\"{printf \"%d/%d\", $3,$2}'"
+	DiskUsage = subprocess.check_output(cmd, shell = True )
+	
+	# Clear Display
+	disp.clear(disp.PAGE)
+	disp.clear(disp.ALL)
 
-    # Shell scripts for system monitoring from here : https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
-    cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
-    CPU = subprocess.check_output(cmd, shell = True )
-    cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'"
-    MemUsage = subprocess.check_output(cmd, shell = True )
-    cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}'"
-    Disk = subprocess.check_output(cmd, shell = True )
+	#Set Cursor at Origin
+	disp.setCursor(0,0)
 
-    # Write two lines of text.
+	# Prints Percentage Use on OLED Display
+	disp.print("CPU: " + str(CPU.decode('utf-8')))
+	disp.setCursor(0,10)
+	disp.print("Mem: " + str(Mem_percent.decode('utf-8')))
+	disp.setCursor(0,20)	
+	disp.print("Disk:  " + str(Disk_percent.decode('utf-8')))
+	
+	disp.display()
+	time.sleep(10) #Pause 10 sec
+	
+	# Clear Display
+	disp.clear(disp.PAGE)
+	disp.clear(disp.ALL)
 
-    draw.text((x, top),       "eth0: " + str(get_ip_address('eth0')),  font=font, fill=255)
-    draw.text((x, top+8),     "wlan0: " + str(get_ip_address('wlan0')), font=font, fill=255)
-    draw.text((x, top+16),    str(MemUsage.decode('utf-8')),  font=font, fill=255)
-    draw.text((x, top+25),    str(Disk.decode('utf-8')),  font=font, fill=255)
-
-    # Display image.
-    disp.image(image)
-    disp.display()
-    time.sleep(1)
+	#Set Cursor at Origin
+	disp.setCursor(0,0)
+	
+	# Prints Capacity Use on OLED Display
+	disp.print("Mem:")
+	disp.setCursor(0,10)
+	disp.print(str(MemUsage.decode('utf-8')) + "GB")
+	disp.setCursor(0,20)
+	disp.print("Disk:")
+	disp.setCursor(0,30)
+	disp.print("  " + str(DiskUsage.decode('utf-8')) + "GB")
+	
+	disp.display()
+	time.sleep(10) #Pause 10 sec
