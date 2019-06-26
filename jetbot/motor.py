@@ -1,3 +1,21 @@
+# Written by SparkFun Electronics June 2019
+# Author: Wes Furuya
+# *Shell scripts were taken from original jetbot stats.py code.
+#
+# Do you like this code?
+#
+# Help support SparkFun and buy a SparkFun jetbot kit!
+# https://www.sparkfun.com/products/15365
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#------------------------------------------------------------------------
+
 import atexit
 import traitlets
 from traitlets.config.configurable import Configurable
