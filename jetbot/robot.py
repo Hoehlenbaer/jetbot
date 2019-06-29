@@ -60,8 +60,8 @@ class Robot(SingletonConfigurable):
     # Issue relating to H-Bridge driver: When setting speed levels, the maximum should be
     # 255, but in practical use, there are occasions when the maximum input is lower than 255.
     # In those circumstances, the motor reverses direction once that "practical" maximum input
-    # is exceeded (even if it is below 255) due to how the firmware operates. Therefore, we
-    # will use 245 to keep a margin of error.
+    # is exceeded (even if it is below 255) due to how the board operates. Therefore, we will
+    # use 245 to keep a margin of error.
        
     def forward(self, speed=1.0, duration=None):
         speed = int(speed*245)
