@@ -55,34 +55,28 @@ class Robot(SingletonConfigurable):
     # Set Motor Controls: .setDrive( motor number, direction, speed)
     # Motor Number: A = 0, B = 1
     # Direction: FWD = 0, BACK = 1
-    # Speed: 0 - 255
-
-    # Issue relating to H-Bridge driver: When setting speed levels, the maximum should be
-    # 255, but in practical use, there are occasions when the maximum input is lower than 255.
-    # In those circumstances, the motor reverses direction once that "practical" maximum input
-    # is exceeded (even if it is below 255) due to how the board operates. Therefore, we will
-    # use 245 to keep a margin of error.
+    # Speed: (-255) - 255
        
     def forward(self, speed=1.0, duration=None):
-        speed = int(speed*245)
+        speed = int(speed*255)
         self.motor_driver.setDrive(0, 0, speed)
         self.motor_driver.setDrive(1, 0, speed)
         self.motor_driver.enable()
 
     def backward(self, speed=1.0):
-        speed = int(speed*245)
+        speed = int(speed*255)
         self.motor_driver.setDrive(0, 1, speed)
         self.motor_driver.setDrive(1, 1, speed)
         self.motor_driver.enable()
 
     def left(self, speed=1.0):
-        speed = int(speed*245)
+        speed = int(speed*255)
         self.motor_driver.setDrive(0, 1, speed)
         self.motor_driver.setDrive(1, 0, speed)
         self.motor_driver.enable()
 
     def right(self, speed=1.0):
-        speed = int(speed*245)
+        speed = int(speed*255)
         self.motor_driver.setDrive(0, 0, speed)
         self.motor_driver.setDrive(1, 1, speed)
         self.motor_driver.enable()
