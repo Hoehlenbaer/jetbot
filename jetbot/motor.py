@@ -42,18 +42,12 @@ class Motor(Configurable):
 
     def _write_value(self, value):
         """Sets motor value between [-1, 1]"""
-        speed = int(245 * (self.alpha * value + self.beta))
+        speed = int(255 * (self.alpha * value + self.beta))
 
 	# Set Motor Controls: .setDrive( motor number, direction, speed)
 	# Motor Number: A = 0, B = 1
 	# Direction: FWD = 0, BACK = 1
-	# Speed: 0 - 255
-
-	# Issue relating to H-Bridge driver: When setting speed levels, the maximum should be
-	# 255, but in practical use, there are occasions when the maximum input is lower than 255.
-	# In those circumstances, the motor reverses direction once that "practical" maximum input
-	# is exceeded (even if it is below 255) due to how the board operates. Therefore, we will
-	# use 245 to keep a margin of error.
+	# Speed: (-255) - 255 (neg. values reverse direction of motor)
 
         if self.channel == 1:
             self._motor = self._driver.setDrive(self.channel-1, 0, speed)
