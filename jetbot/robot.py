@@ -55,7 +55,7 @@ class Robot(SingletonConfigurable):
     # Set Motor Controls: .setDrive( motor number, direction, speed)
     # Motor Number: A = 0, B = 1
     # Direction: FWD = 0, BACK = 1
-    # Speed: (-255) - 255
+    # Speed: (-255) - 255 (neg. values reverse direction of motor)
        
     def forward(self, speed=1.0, duration=None):
         speed = int(speed*255)
