@@ -20,6 +20,9 @@ import subprocess
 # Default Address for Micro OLED
 micro_oled_address=0x3D
 
+# Screen Width
+LCDWIDTH = 64
+
 # Initialization
 disp = qwiic_micro_oled.QwiicMicroOled(micro_oled_address)
 disp.begin()
@@ -32,15 +35,23 @@ while True:
 	a = 0
 	b = 0
 	c = 0
+
 	
 	# Check Ethernet
 	try:
 		eth = get_ip_address('eth0')
 		if eth != None:
 			a = a + 1
-	#		#Check String Length
-	#		if len(eth) > 10:
-	#			b = 1
+
+		#Check String Length
+		if len(eth) > 10:
+			
+			# Find '.' to loop numerals
+			while b != -1:
+				x1 = LCDWIDTH - disp._font.width * (len(eth)-b)
+				i = b+1
+				b = eth.find('.', i)
+
 	except Exception as e:
 		print(e)
 	
@@ -49,9 +60,16 @@ while True:
 		wlan = get_ip_address('wlan0')
 		if wlan != None:
 			a = a + 2
-	#		# Check String Length
-	#		if len(wlan) > 10:
-	#			c = 1
+
+		#Check String Length
+		if len(wlan) > 10:
+			
+			# Find '.' to loop numerals
+			while c != -1:
+				x2 = LCDWIDTH - disp._font.width * (len(wlan)-c)
+				j = c+1
+				c = wlan.find('.', j)
+
 	except Exception as e:
 		print(e)
 	
@@ -90,99 +108,51 @@ while True:
 	if a == 1:
 		disp.print("eth0:")
 		disp.setCursor(0,8)
-		disp.print(str(eth))
+		if b != 0:
+			disp.print(str(eth[0:i]))
+			disp.setCursor(x1,16)
+			disp.print(str(eth[i::]))
+		else:
+			disp.print(str(eth))
 		
 	elif a == 2:
 		disp.print("wlan0: ")
 		disp.setCursor(0,8)
-		disp.print(str(wlan))
+		if c != 0:
+			disp.print(str(wlan[0:j]))
+			disp.setCursor(x2,16)
+			disp.print(str(wlan[j::]))
+		else:
+			disp.print(str(wlan))
 		
 	elif a == 3:
 		disp.print("eth0:")
 		disp.setCursor(0,8)
-		disp.print(str(eth))
+		if b != 0:
+			disp.print(str(eth[0:i]))
+			disp.setCursor(x1,16)
+			disp.print(str(eth[i::]))
+		else:
+			disp.print(str(eth))
 		
 		disp.setCursor(0,24)
 		disp.print("wlan0: ")
 		disp.setCursor(0,32)
-		disp.print(str(wlan))
+		if c != 0:
+			disp.print(str(wlan[0:j]))
+			disp.setCursor(x2,40)
+			disp.print(str(wlan[j::]))
+		else:
+			disp.print(str(wlan))
 		
 	else:
 		disp.print("No Internet!")
 	
-	# Alternative:
-	# Find '.' to loop numerals
-	#i = 0
-	#while i != -1:
-	#	#disp.cursorX += disp._font.width+1
-	#	x = LCDWIDTH - disp._font.width * (len(wlan)-i)
-	#	i = wlan.find('.', i+1)
-	#	print(i)
-	#
-	#disp.setCursor(x,32)
-
 	disp.display()
 	time.sleep(10) #Pause 10 sec
 	disp.scrollStop() #Stops scrolling
-	
-	
-	# Check Resource Usage--------------------------------------
-	# Shell scripts for system monitoring from here : https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-$
-		
-	# CPU Load
-	cmd = "top -bn1 | grep load | awk '{printf \"%.1f%%\", $(NF-2)}'"
-	CPU = subprocess.check_output(cmd, shell = True )
-	
-	# Memory Use
-	cmd = "free -m | awk 'NR==2{printf \"%.1f%%\", $3*100/$2}'"
-	Mem_percent = subprocess.check_output(cmd, shell = True )
-	cmd = "free -m | awk 'NR==2{printf \"%.2f/%.1f\", $3/1024,$2/1024}'"
-	MemUsage = subprocess.check_output(cmd, shell = True )
-	
-	# Disk Storage
-	cmd = "df -h | awk '$NF==\"/\"{printf \"%s\", $5}'"
-	Disk_percent = subprocess.check_output(cmd, shell = True )
-	cmd = "df -h | awk '$NF==\"/\"{printf \"%d/%d\", $3,$2}'"
-	DiskUsage = subprocess.check_output(cmd, shell = True )
 
 
-
-	# Displays IP Address (if available)--------------------------------
-	
-	# Clear Display
-	disp.clear(disp.PAGE)
-	disp.clear(disp.ALL)
-	
-	#Set Cursor at Origin
-	disp.setCursor(0,0)
-
-	# Prints IP Address on OLED Display
-	if a == 1:
-		disp.print("eth0:")
-		disp.setCursor(0,8)
-		disp.print(str(eth))
-		
-	elif a == 2:
-		disp.print("wlan0: ")
-		disp.setCursor(0,8)
-		disp.print(str(wlan))
-		
-	elif a == 3:
-		disp.print("eth0:")
-		disp.setCursor(0,8)
-		disp.print(str(eth))
-		
-		disp.setCursor(0,24)
-		disp.print("wlan0: ")
-		disp.setCursor(0,32)
-		disp.print(str(wlan))
-
-	else:
-		disp.print("No Internet!")
-	
-	disp.display()
-	time.sleep(10) #Pause 10 sec
-	
 	# Displays Resource Usage-------------------------------------------
 	# ------------------------------------------------------------------
 
