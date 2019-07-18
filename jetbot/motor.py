@@ -44,15 +44,15 @@ class Motor(Configurable):
         """Sets motor value between [-1, 1]"""
         speed = int(255 * (self.alpha * value + self.beta))
 
-	# Set Motor Controls: .setDrive( motor number, direction, speed)
+	# Set Motor Controls: .set_drive( motor number, direction, speed)
 	# Motor Number: A = 0, B = 1
 	# Direction: FWD = 0, BACK = 1
 	# Speed: (-255) - 255 (neg. values reverse direction of motor)
 
         if self.channel == 1:
-            self._motor = self._driver.setDrive(self.channel-1, 0, speed)
+            self._motor = self._driver.set_drive(self.channel-1, 0, speed)
         elif self.channel == 2:
-            self._motor = self._driver.setDrive(self.channel-1, 0, speed)
+            self._motor = self._driver.set_drive(self.channel-1, 0, speed)
         self._driver.enable()
             
     def _release(self):
