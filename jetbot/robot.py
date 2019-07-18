@@ -39,10 +39,7 @@ class Robot(SingletonConfigurable):
     def __init__(self, *args, **kwargs):
         super(Robot, self).__init__(*args, **kwargs)
         
-        # Default Address for SCMD is 0x5A
-        scmd_address = 0x5A
-        
-        self.motor_driver = qwiic_scmd.QwiicScmd(scmd_address)
+        self.motor_driver = qwiic_scmd.QwiicScmd()
         self.left_motor = Motor(self.motor_driver, channel=self.left_motor_channel, alpha=self.left_motor_alpha)
         self.right_motor = Motor(self.motor_driver, channel=self.right_motor_channel, alpha=self.right_motor_alpha)
         self.motor_driver.enable()
@@ -52,33 +49,33 @@ class Robot(SingletonConfigurable):
         self.right_motor.value = right_speed
         self.motor_driver.enable()
  
-    # Set Motor Controls: .setDrive( motor number, direction, speed)
+    # Set Motor Controls: .set_drive( motor number, direction, speed)
     # Motor Number: A = 0, B = 1
     # Direction: FWD = 0, BACK = 1
     # Speed: (-255) - 255 (neg. values reverse direction of motor)
        
     def forward(self, speed=1.0, duration=None):
         speed = int(speed*255)
-        self.motor_driver.setDrive(0, 0, speed)
-        self.motor_driver.setDrive(1, 0, speed)
+        self.motor_driver.set_drive(0, 0, speed)
+        self.motor_driver.set_drive(1, 0, speed)
         self.motor_driver.enable()
 
     def backward(self, speed=1.0):
         speed = int(speed*255)
-        self.motor_driver.setDrive(0, 1, speed)
-        self.motor_driver.setDrive(1, 1, speed)
+        self.motor_driver.set_drive(0, 1, speed)
+        self.motor_driver.set_drive(1, 1, speed)
         self.motor_driver.enable()
 
     def left(self, speed=1.0):
         speed = int(speed*255)
-        self.motor_driver.setDrive(0, 1, speed)
-        self.motor_driver.setDrive(1, 0, speed)
+        self.motor_driver.set_drive(0, 1, speed)
+        self.motor_driver.set_drive(1, 0, speed)
         self.motor_driver.enable()
 
     def right(self, speed=1.0):
         speed = int(speed*255)
-        self.motor_driver.setDrive(0, 0, speed)
-        self.motor_driver.setDrive(1, 1, speed)
+        self.motor_driver.set_drive(0, 0, speed)
+        self.motor_driver.set_drive(1, 1, speed)
         self.motor_driver.enable()
 
     def stop(self):
