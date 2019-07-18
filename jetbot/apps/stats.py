@@ -86,12 +86,14 @@ while True:
 	Mem_percent = subprocess.check_output(cmd, shell = True )
 	cmd = "free -m | awk 'NR==2{printf \"%.2f/%.1f\", $3/1024,$2/1024}'"
 	MemUsage = subprocess.check_output(cmd, shell = True )
+	x3 = LCDWIDTH - (disp._font.width + 1) * (len(str(MemUsage.decode('utf-8')) + "GB"))
 	
 	# Disk Storage
 	cmd = "df -h | awk '$NF==\"/\"{printf \"%s\", $5}'"
 	Disk_percent = subprocess.check_output(cmd, shell = True )
 	cmd = "df -h | awk '$NF==\"/\"{printf \"%d/%d\", $3,$2}'"
 	DiskUsage = subprocess.check_output(cmd, shell = True )
+	x4 = LCDWIDTH - (disp._font.width + 1) * (len(str(DiskUsage.decode('utf-8')) + "GB"))
 
 
 
@@ -184,12 +186,12 @@ while True:
 	
 	# Prints Capacity Use on OLED Display
 	disp.print("Mem:")
-	disp.setCursor(0,10)
+	disp.setCursor(x3,10)
 	disp.print(str(MemUsage.decode('utf-8')) + "GB")
 	disp.setCursor(0,20)
 	disp.print("Disk:")
-	disp.setCursor(0,30)
-	disp.print("  " + str(DiskUsage.decode('utf-8')) + "GB")
+	disp.setCursor(x4,30)
+	disp.print(str(DiskUsage.decode('utf-8')) + "GB")
 	
 	disp.display()
 	time.sleep(7.5) #Pause 10 sec
