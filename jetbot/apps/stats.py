@@ -16,18 +16,14 @@ import qwiic_micro_oled
 from jetbot.utils.utils import get_ip_address
 import subprocess
 
-
-# Default Address for Micro OLED
-micro_oled_address=0x3D
-
 # Screen Width
 LCDWIDTH = 64
 
 # Initialization------------------------------------------------------------
-disp = qwiic_micro_oled.QwiicMicroOled(micro_oled_address)
+disp = qwiic_micro_oled.QwiicMicroOled()
 disp.begin()
-disp.scrollStop()
-disp.setFontType(0) # Set Font
+disp.scroll_stop()
+disp.set_font_type(0) # Set Font
 # Could replace line spacing with disp.getFontHeight, but doesn't scale properly
 
 # Display Flame (set in begin function)-------------------------------------
@@ -110,45 +106,45 @@ while True:
 	disp.clear(disp.ALL)
 	
 	#Set Cursor at Origin
-	disp.setCursor(0,0)
+	disp.set_cursor(0,0)
 
 	# Prints IP Address on OLED Display
 	if a == 1:
 		disp.print("eth0:")
-		disp.setCursor(0,8)
+		disp.set_cursor(0,8)
 		if b != 0:
 			disp.print(str(eth[0:i]))
-			disp.setCursor(x1,16)
+			disp.set_cursor(x1,16)
 			disp.print(str(eth[i::]))
 		else:
 			disp.print(str(eth))
 		
 	elif a == 2:
 		disp.print("wlan0: ")
-		disp.setCursor(0,8)
+		disp.set_cursor(0,8)
 		if c != 0:
 			disp.print(str(wlan[0:j]))
-			disp.setCursor(x2,16)
+			disp.set_cursor(x2,16)
 			disp.print(str(wlan[j::]))
 		else:
 			disp.print(str(wlan))
 		
 	elif a == 3:
 		disp.print("eth0:")
-		disp.setCursor(0,8)
+		disp.set_cursor(0,8)
 		if b != 0:
 			disp.print(str(eth[0:i]))
-			disp.setCursor(x1,16)
+			disp.set_cursor(x1,16)
 			disp.print(str(eth[i::]))
 		else:
 			disp.print(str(eth))
 		
-		disp.setCursor(0,24)
+		disp.set_cursor(0,24)
 		disp.print("wlan0: ")
-		disp.setCursor(0,32)
+		disp.set_cursor(0,32)
 		if c != 0:
 			disp.print(str(wlan[0:j]))
-			disp.setCursor(x2,40)
+			disp.set_cursor(x2,40)
 			disp.print(str(wlan[j::]))
 		else:
 			disp.print(str(wlan))
@@ -168,18 +164,18 @@ while True:
 	disp.clear(disp.ALL)
 
 	# Prints Percentage Use on OLED Display
-	disp.setCursor(0,0)	#Set Cursor at Origin
+	disp.set_cursor(0,0)	#Set Cursor at Origin
 	disp.print("CPU:")
-	disp.setCursor(0,10)
+	disp.set_cursor(0,10)
 	disp.print("Mem:")
-	disp.setCursor(0,20)	
+	disp.set_cursor(0,20)	
 	disp.print("Disk:")
 
-	disp.setCursor(x3,0)
+	disp.set_cursor(x3,0)
 	disp.print(str(CPU.decode('utf-8')))
-	disp.setCursor(x4,10)
+	disp.set_cursor(x4,10)
 	disp.print(str(Mem_percent.decode('utf-8')))
-	disp.setCursor(x5,20)	
+	disp.set_cursor(x5,20)	
 	disp.print(str(Disk_percent.decode('utf-8')))
 	
 	disp.display()
@@ -192,13 +188,13 @@ while True:
 	disp.clear(disp.ALL)
 	
 	# Prints Capacity Use on OLED Display
-	disp.setCursor(0,0)	#Set Cursor at Origin
+	disp.set_cursor(0,0)	#Set Cursor at Origin
 	disp.print("Mem:")
-	disp.setCursor(x6,10)
+	disp.set_cursor(x6,10)
 	disp.print(str(MemUsage.decode('utf-8')) + "GB")
-	disp.setCursor(0,20)
+	disp.set_cursor(0,20)
 	disp.print("Disk:")
-	disp.setCursor(x7,30)
+	disp.set_cursor(x7,30)
 	disp.print(str(DiskUsage.decode('utf-8')) + "GB")
 	
 	disp.display()
