@@ -86,16 +86,20 @@ while True:
 	Mem_percent = subprocess.check_output(cmd, shell = True )
 	cmd = "free -m | awk 'NR==2{printf \"%.2f/%.1f\", $3/1024,$2/1024}'"
 	MemUsage = subprocess.check_output(cmd, shell = True )
-	x3 = LCDWIDTH - (disp._font.width + 1) * (len(str(MemUsage.decode('utf-8')) + "GB"))
 	
 	# Disk Storage
 	cmd = "df -h | awk '$NF==\"/\"{printf \"%s\", $5}'"
 	Disk_percent = subprocess.check_output(cmd, shell = True )
 	cmd = "df -h | awk '$NF==\"/\"{printf \"%d/%d\", $3,$2}'"
 	DiskUsage = subprocess.check_output(cmd, shell = True )
-	x4 = LCDWIDTH - (disp._font.width + 1) * (len(str(DiskUsage.decode('utf-8')) + "GB"))
 
 
+	# Text Spacing (places text on right edge of display)
+	x3 = LCDWIDTH - (disp._font.width + 1) * (len(str(CPU.decode('utf-8'))))
+	x4 = LCDWIDTH - (disp._font.width + 1) * (len(str(Mem_percent.decode('utf-8'))))
+	x5 = LCDWIDTH - (disp._font.width + 1) * (len(str(Disk_percent.decode('utf-8'))))
+	x6 = LCDWIDTH - (disp._font.width + 1) * (len(str(MemUsage.decode('utf-8')) + "GB"))
+	x7 = LCDWIDTH - (disp._font.width + 1) * (len(str(DiskUsage.decode('utf-8')) + "GB"))
 
 	# Displays IP Address (if available)--------------------------------
 	
@@ -163,15 +167,21 @@ while True:
 	disp.clear(disp.PAGE)
 	disp.clear(disp.ALL)
 
-	#Set Cursor at Origin
-	disp.setCursor(0,0)
 
 	# Prints Percentage Use on OLED Display
-	disp.print("CPU: " + str(CPU.decode('utf-8')))
+	disp.setCursor(0,0)	#Set Cursor at Origin
+	disp.print("CPU:")
 	disp.setCursor(0,10)
-	disp.print("Mem: " + str(Mem_percent.decode('utf-8')))
+	disp.print("Mem:")
 	disp.setCursor(0,20)	
-	disp.print("Disk:  " + str(Disk_percent.decode('utf-8')))
+	disp.print("Disk:")
+
+	disp.setCursor(x3,0)
+	disp.print(str(CPU.decode('utf-8')))
+	disp.setCursor(x4,10)
+	disp.print(str(Mem_percent.decode('utf-8')))
+	disp.setCursor(x5,20)	
+	disp.print(str(Disk_percent.decode('utf-8')))
 	
 	disp.display()
 	time.sleep(7.5) #Pause 10 sec
@@ -181,16 +191,15 @@ while True:
 	disp.clear(disp.PAGE)
 	disp.clear(disp.ALL)
 
-	#Set Cursor at Origin
-	disp.setCursor(0,0)
 	
 	# Prints Capacity Use on OLED Display
+	disp.setCursor(0,0)	#Set Cursor at Origin
 	disp.print("Mem:")
-	disp.setCursor(x3,10)
+	disp.setCursor(x6,10)
 	disp.print(str(MemUsage.decode('utf-8')) + "GB")
 	disp.setCursor(0,20)
 	disp.print("Disk:")
-	disp.setCursor(x4,30)
+	disp.setCursor(x7,30)
 	disp.print(str(DiskUsage.decode('utf-8')) + "GB")
 	
 	disp.display()
