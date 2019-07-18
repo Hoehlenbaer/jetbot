@@ -23,21 +23,25 @@ micro_oled_address=0x3D
 # Screen Width
 LCDWIDTH = 64
 
-# Initialization
+# Initialization------------------------------------------------------------
 disp = qwiic_micro_oled.QwiicMicroOled(micro_oled_address)
 disp.begin()
 disp.scrollStop()
 disp.setFontType(0) # Set Font
 # Could replace line spacing with disp.getFontHeight, but doesn't scale properly
 
+# Display Flame (set in begin function)-------------------------------------
+disp.display()
+time.sleep(5) #Pause 10 sec
+
 while True:
-	# Checks Eth0 and Wlan0 Connections-------------------------
+	# Checks Eth0 and Wlan0 Connections---------------------------------
 	a = 0
 	b = 0
 	c = 0
 
 	
-	# Check Ethernet
+	# Checks for Ethernet Connection
 	try:
 		eth = get_ip_address('eth0')
 		if eth != None:
@@ -45,7 +49,6 @@ while True:
 
 		#Check String Length
 		if len(eth) > 10:
-			
 			# Find '.' to loop numerals
 			while b != -1:
 				x1 = LCDWIDTH - disp._font.width * (len(eth)-b)
@@ -55,7 +58,7 @@ while True:
 	except Exception as e:
 		print(e)
 	
-	# Check WiFi
+	# Checks for WiFi Connection
 	try:
 		wlan = get_ip_address('wlan0')
 		if wlan != None:
@@ -63,7 +66,6 @@ while True:
 
 		#Check String Length
 		if len(wlan) > 10:
-			
 			# Find '.' to loop numerals
 			while c != -1:
 				x2 = LCDWIDTH - disp._font.width * (len(wlan)-c)
@@ -74,7 +76,7 @@ while True:
 		print(e)
 	
 	
-	# Check Resource Usage--------------------------------------
+	# Check Resource Usage----------------------------------------------
 	# Shell scripts for system monitoring from here : https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-$
 		
 	# CPU Load
@@ -156,8 +158,6 @@ while True:
 	
 	disp.display()
 	time.sleep(10) #Pause 10 sec
-	disp.scrollStop() #Stops scrolling
-
 
 	# Displays Resource Usage-------------------------------------------
 	# ------------------------------------------------------------------
@@ -166,7 +166,6 @@ while True:
 	# Clear Display
 	disp.clear(disp.PAGE)
 	disp.clear(disp.ALL)
-
 
 	# Prints Percentage Use on OLED Display
 	disp.setCursor(0,0)	#Set Cursor at Origin
@@ -186,11 +185,11 @@ while True:
 	disp.display()
 	time.sleep(7.5) #Pause 10 sec
 	
+	
 	# Size--------------------------------------------------------------
 	# Clear Display
 	disp.clear(disp.PAGE)
 	disp.clear(disp.ALL)
-
 	
 	# Prints Capacity Use on OLED Display
 	disp.setCursor(0,0)	#Set Cursor at Origin
