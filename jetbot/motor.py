@@ -57,4 +57,4 @@ class Motor(Configurable):
             
     def _release(self):
         """Stops motor by releasing control"""
-        self._motor.disable()
+        self._driver.disable()
