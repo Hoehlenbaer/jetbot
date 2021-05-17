@@ -1,6 +1,6 @@
 # Written by SparkFun Electronics June 2019
 # Author: Wes Furuya
-# *Shell scripts were taken from original jetbot stats.py code.
+# *Shell scripts were taken from original jetbot robot.py code.
 #
 # Do you like this code?
 #
